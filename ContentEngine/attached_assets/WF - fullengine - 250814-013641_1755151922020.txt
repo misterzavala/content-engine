@@ -1,0 +1,5602 @@
+full-engine
+
+"{
+  "nodes": [
+    {
+      "parameters": {
+        "hostUrl": "graph-video.facebook.com",
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "17841463359947632",
+        "edge": "media_publish",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "creation_id",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "name": "caption",
+                "value": "={{ $('Lookup Sheet').item.json['IG caption'] }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        2160,
+        960
+      ],
+      "id": "737d71a8-be71-41a6-8451-e3671da55da6",
+      "name": "Publish Reel",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "gw6M7A8GZWlYKlAm",
+          "name": "USER ACCESS TOKEN - SEPT EXPIRY"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1JxP7K2Fqmnb8yXEjD9NImtVFlDaEXhPk_4H406banxg",
+          "mode": "list",
+          "cachedResultName": "MASTER Creative Workflow",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JxP7K2Fqmnb8yXEjD9NImtVFlDaEXhPk_4H406banxg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1641798713,
+          "mode": "list",
+          "cachedResultName": "Approved",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JxP7K2Fqmnb8yXEjD9NImtVFlDaEXhPk_4H406banxg/edit#gid=1641798713"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "serial number",
+              "lookupValue": "={{ $json['serial number'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -860,
+        1160
+      ],
+      "id": "e19b9720-695e-47f2-8241-f123315be0b0",
+      "name": "Lookup Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "hcToihb1ZUBELpcu",
+          "name": "zavala@"
+        }
+      },
+      "disabled": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "17841463359947632",
+        "edge": "media",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "media_type",
+                "value": "REELS"
+              },
+              {
+                "name": "caption",
+                "value": "={{ $('Lookup Sheet').item.json['IG caption'] }}"
+              },
+              {
+                "name": "video_url",
+                "value": "={{ $json.dlink }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        120,
+        400
+      ],
+      "id": "64a5d2e8-6a7d-4b43-9688-81944011ee5d",
+      "name": "Create IG Reel",
+      "executeOnce": true,
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "8uKxmMWZnnIHV4tD",
+          "name": "APP ACCESS TOKEN - SEPT EXPIRY"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "37f96da8-a8b6-417b-b5cf-7a4df5b4610c",
+              "name": "container_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        320,
+        400
+      ],
+      "id": "1d34558e-a46b-4344-b9b1-a75a5d28bc5c",
+      "name": "Get Container ID",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.facebook.com/v22.0/{{ $('Get Container ID').item.json.container_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "status"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        120,
+        840
+      ],
+      "id": "3b0cf00e-7b33-4145-81e7-8bd07bca9346",
+      "name": "Check Status",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "wLWayZf7M4hi9AoB",
+          "name": "FB Graph - Access Token - Expires In Aug - 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c73db19d-560a-4b42-a4f3-8347ab65b342",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "Error",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ERROR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "In Progress",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "71a4e79c-f58d-49da-abe2-ccd10cec5590"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "IN PROGRESS"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1340,
+        820
+      ],
+      "id": "bd010a60-c10b-43f0-834b-9f6fe097dc91",
+      "name": "Switch Status",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "47c02eb0-2a85-4966-a73d-084f8a0dd540",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "Finished",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1000,
+        820
+      ],
+      "id": "df1c0c60-67af-4fa2-9354-9c13afe96b12",
+      "name": "Is Finished?",
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "# New Video Intake\n",
+        "height": 680,
+        "width": 1060,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1400,
+        900
+      ],
+      "id": "caad54fd-c32f-4ae7-b8ef-db8014f5b28b",
+      "name": "Sticky Note",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=POSTED ✅\n{{ $('Lookup Sheet').item.json['fio link'] }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false,
+          "botProfile": {
+            "imageValues": {
+              "profilePhotoType": "image",
+              "icon_url": "https://cdn2.iconfinder.com/data/icons/greenline/512/check-512.png"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        2120,
+        1400
+      ],
+      "id": "87c0979f-eaa9-4a02-9001-3fa15f07ae1e",
+      "name": "Update Team",
+      "webhookId": "85db7200-eb84-4c58-8888-0afa637bae57",
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "# Upload to IG thebenallgeyer",
+        "height": 1220,
+        "width": 2420,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a8a5d750-6be4-43ca-b634-39e741c20171",
+      "name": "Sticky Note1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.upload-post.com/api/upload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "title",
+              "value": "= {{ $('Lookup Sheet').item.json['TT title'] }}"
+            },
+            {
+              "name": "user",
+              "value": "@benallgeyer2"
+            },
+            {
+              "name": "platform[]",
+              "value": "tiktok"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "video",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        380,
+        1300
+      ],
+      "id": "5d51bbc7-e5a9-493b-bf51-f05f8201e1b5",
+      "name": "Upload to ttBA",
+      "retryOnFail": false,
+      "executeOnce": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "GTH3wW1TnaPQ2f7c",
+          "name": "Upload Post Header Auth"
+        }
+      },
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.upload-post.com/api/upload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "title",
+              "value": "= {{ $('Lookup Sheet').item.json['TT title'] }}"
+            },
+            {
+              "name": "user",
+              "value": "@benallgeyer"
+            },
+            {
+              "name": "platform[]",
+              "value": "tiktok"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "video",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        380,
+        1560
+      ],
+      "id": "01612614-c3ae-42ec-8a6f-f841d694f558",
+      "name": "Upload to ttWM",
+      "executeOnce": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "GTH3wW1TnaPQ2f7c",
+          "name": "Upload Post Header Auth"
+        }
+      },
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "# Get Video File",
+        "height": 680,
+        "width": 300,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        900
+      ],
+      "id": "3eb81f85-7c93-46f2-b893-4a0245ca776f",
+      "name": "Sticky Note7",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.dlink }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -220,
+        980
+      ],
+      "id": "8c17b65a-a862-41b7-8a6d-81ff454576e6",
+      "name": "Download File",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1JxP7K2Fqmnb8yXEjD9NImtVFlDaEXhPk_4H406banxg",
+          "mode": "list",
+          "cachedResultName": "MASTER Creative Workflow",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JxP7K2Fqmnb8yXEjD9NImtVFlDaEXhPk_4H406banxg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1641798713,
+          "mode": "list",
+          "cachedResultName": "Intake",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JxP7K2Fqmnb8yXEjD9NImtVFlDaEXhPk_4H406banxg/edit#gid=1641798713"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "serial number": "={{ $json.name }}",
+            "status": "published",
+            "IG thebenallgeyer": "published",
+            "TT benallgeyer": "published",
+            "TT wholesalemastery": "published"
+          },
+          "matchingColumns": [
+            "serial number"
+          ],
+          "schema": [
+            {
+              "id": "fio link",
+              "displayName": "fio link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "win",
+              "displayName": "win",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "owner",
+              "displayName": "owner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Submit Time",
+              "displayName": "Submit Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "drive link",
+              "displayName": "drive link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "serial number",
+              "displayName": "serial number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "hook",
+              "displayName": "hook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "cap revise",
+              "displayName": "cap revise",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "IG caption",
+              "displayName": "IG caption",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "TT title",
+              "displayName": "TT title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CTA",
+              "displayName": "CTA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "IG thebenallgeyer",
+              "displayName": "IG thebenallgeyer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TT benallgeyer",
+              "displayName": "TT benallgeyer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TT wholesalemastery",
+              "displayName": "TT wholesalemastery",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "FB Ben Allgeyer",
+              "displayName": "FB Ben Allgeyer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Views",
+              "displayName": "Views",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Likes",
+              "displayName": "Likes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Comments",
+              "displayName": "Comments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Shares",
+              "displayName": "Shares",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1900,
+        1420
+      ],
+      "id": "b60a7dbc-eba2-4dcf-ad3f-b26f38a2cdce",
+      "name": "Mark as Published",
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "hcToihb1ZUBELpcu",
+          "name": "zavala@"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=file found in google sheets",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        -640,
+        960
+      ],
+      "id": "4ecd6728-38c8-44dd-95c0-eba71cfc3340",
+      "name": "Sheet Found1",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=video downloaded",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        -220,
+        1220
+      ],
+      "id": "5bb25dce-5546-4bd0-b36e-6b5c1e65a305",
+      "name": "got video file",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=video sent to graph api",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        420,
+        140
+      ],
+      "id": "c8e50b3f-f89e-42a7-96ce-6c3d0fd4b7f8",
+      "name": "Created",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=container id created / {{ $json.container_id }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        700,
+        140
+      ],
+      "id": "c8e61661-9a5d-4d67-85c4-e7681a53c6b7",
+      "name": "container id created",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=status is FINISHED, video moving to publishing",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1340,
+        600
+      ],
+      "id": "3bed0d5f-3eef-40fb-b231-01afa77704cf",
+      "name": "Finished",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=video published successfully / igBA",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        2140,
+        740
+      ],
+      "id": "98ad13c7-6042-4ab7-9647-3995f2c13cc1",
+      "name": "Published on IG",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=video error, trying again",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1580,
+        800
+      ],
+      "id": "b8afb811-f7c5-4f31-93cb-88708aca0f13",
+      "name": "Error",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=video published successfully / ttBA",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        860,
+        1300
+      ],
+      "id": "de4d0d7e-3eab-4baf-9b7a-d5e7f3238091",
+      "name": "posted to ttBA",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=video published successfully / ttWM",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        860,
+        1560
+      ],
+      "id": "5e245359-49dd-4a6c-bd7e-a6b2f2d08212",
+      "name": "posted to ttWM",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1880,
+        960
+      ],
+      "id": "4dd3c3c5-8e7d-421b-ac60-6234197e1830",
+      "name": "Wait Retry 15s",
+      "webhookId": "e9ac0c1d-b415-4160-a6b1-908d2310cb23",
+      "retryOnFail": false,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=upload in progress, waiting...",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1580,
+        980
+      ],
+      "id": "26b1b2f0-4b47-464f-9d6d-d9624d23c2cd",
+      "name": "In Progress",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c73db19d-560a-4b42-a4f3-8347ab65b342",
+                    "leftValue": "={{ $json.ig_error }}",
+                    "rightValue": 2207010,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Caption Long"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b75498aa-db26-46e9-b5e4-74b41de6fa78",
+                    "leftValue": "={{ $json.ig_error }}",
+                    "rightValue": 2207026,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Bad Format"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "64433fd0-d1da-4367-90bd-54e1beaa1b26",
+                    "leftValue": "={{ $json.ig_error }}",
+                    "rightValue": 2207052,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "URL Broke"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.ig_error }}",
+                    "rightValue": 2207001,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "71a4e79c-f58d-49da-abe2-ccd10cec5590"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Server Busy"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "9c289b5e-19a5-4477-bdfb-1229eef4fdfc",
+                    "leftValue": "={{ $json.ig_error }}",
+                    "rightValue": 2207053,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Server Busy"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0de2bcab-5774-4854-abf2-53509912dc08",
+                    "leftValue": "={{ $json.ig_error }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "number",
+                      "operation": "empty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "No Error"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        540,
+        840
+      ],
+      "id": "880dfc11-64ea-44bf-acdb-a2486c78ef6a",
+      "name": "Switch Status1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// regex pulls \"2207010\" out of \n// status = \"Error: Media upload has failed with error code 2207010\"\nconst m = ($json.status || '').match(/error code (\\d+)/i);\nitem.json.ig_error = m ? parseInt(m[1], 10) : null;\nreturn item;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        840
+      ],
+      "id": "9129391c-faa1-42e3-ab25-998eb9fafd40",
+      "name": "Code1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=caption too long, revise to under 2200 characters",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1000,
+        100
+      ],
+      "id": "4fa1f208-7302-434a-81ab-c8b49a7364fe",
+      "name": "Cap Too Long",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1340,
+        100
+      ],
+      "id": "d33f57b5-5f60-4383-a0ec-5ef12771f581",
+      "name": "End",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1000,
+        600
+      ],
+      "id": "154c4c97-012f-4a0c-9cb5-63cf24036688",
+      "name": "Wait 60s",
+      "webhookId": "e9ac0c1d-b415-4160-a6b1-908d2310cb23",
+      "retryOnFail": false,
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1340,
+        260
+      ],
+      "id": "9ee8c6e5-9116-4a76-b562-831e19b60a33",
+      "name": "End1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=video is formatted correctly, change to MP4/MOV and retry",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1000,
+        260
+      ],
+      "id": "eb1e2b5b-ba61-48b5-8f88-0ec91d949f85",
+      "name": "Bad Format",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=URL broke, trying again",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1000,
+        420
+      ],
+      "id": "86938a14-d306-4d09-bc4c-d7bcb6aa7a14",
+      "name": "Error1",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1340,
+        420
+      ],
+      "id": "95338424-e641-4cf6-9bce-cee5d0a4ddc6",
+      "name": "End2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        540,
+        400
+      ],
+      "id": "6063a470-a228-4c84-9568-b80a2ea580c3",
+      "name": "Wait 30s",
+      "webhookId": "e9ac0c1d-b415-4160-a6b1-908d2310cb23",
+      "retryOnFail": false,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1JxP7K2Fqmnb8yXEjD9NImtVFlDaEXhPk_4H406banxg",
+          "mode": "list",
+          "cachedResultName": "MASTER Creative Workflow",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JxP7K2Fqmnb8yXEjD9NImtVFlDaEXhPk_4H406banxg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1641798713,
+          "mode": "list",
+          "cachedResultName": "Reels",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JxP7K2Fqmnb8yXEjD9NImtVFlDaEXhPk_4H406banxg/edit#gid=1641798713"
+        },
+        "event": "rowUpdate",
+        "options": {
+          "columnsToWatch": [
+            "status"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1300,
+        1260
+      ],
+      "id": "98f10ae2-20c7-416c-a72e-a6ae8a125a6b",
+      "name": "Reels",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "SeIMEkYVFZuoafy3",
+          "name": "zavala@ Trigger"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b8f5fb58-75fb-49ac-80c1-3281682f0a48",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "ship",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1080,
+        1260
+      ],
+      "id": "e97b07ba-177e-4e91-886a-e76339de13c2",
+      "name": "If1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f4892711-91ac-4c9f-bbd1-a54f55260cc0",
+              "name": "owner",
+              "value": "={{ $json.owner }}",
+              "type": "string"
+            },
+            {
+              "id": "d1b281d3-d5b1-42b8-a4a9-30e5793ceda6",
+              "name": "dlink",
+              "value": "={{ $json['drive link'] }}",
+              "type": "string"
+            },
+            {
+              "id": "a613de52-58f4-4089-83fb-ab9f83296f07",
+              "name": "serial",
+              "value": "={{ $json['serial number'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -640,
+        1160
+      ],
+      "id": "f74d7e8f-01c5-4a72-a7c4-aaecb288797c",
+      "name": "Edit Fields",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "dba6965a-897b-489c-afa9-84a32ce0ee0a",
+              "leftValue": "=",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "28aeab84-c450-48c3-b074-4d5dac836225",
+              "leftValue": "=",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "e10395f5-558e-4e00-b9d2-d5e59c9f3a0f",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1620,
+        1420
+      ],
+      "id": "d0966dea-f265-4bec-888b-707441fe2274",
+      "name": "If2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# Upload to ttBA",
+        "height": 240,
+        "width": 1160
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        1240
+      ],
+      "id": "68950a82-f7d4-459b-be9c-1ee1055ebefb",
+      "name": "Sticky Note11",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# Upload to ttWM",
+        "height": 240,
+        "width": 1160
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        1500
+      ],
+      "id": "c952d72c-e1c0-4e39-9171-663ed85ff93d",
+      "name": "Sticky Note12",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# Upload to ttBA",
+        "height": 500,
+        "width": 1240,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1180,
+        1240
+      ],
+      "id": "5c86b2e7-9c49-4ce7-9ca6-6c64e2783ac7",
+      "name": "Sticky Note13",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=POSTED ✅ (w errors)\n{{ $('Lookup Sheet').item.json['fio link'] }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false,
+          "botProfile": {
+            "imageValues": {
+              "profilePhotoType": "image",
+              "icon_url": "https://cdn2.iconfinder.com/data/icons/greenline/512/check-512.png"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        2240,
+        1580
+      ],
+      "id": "3bfd9283-99ab-4a93-9b4d-b596a3f5cd0c",
+      "name": "Error2",
+      "webhookId": "85db7200-eb84-4c58-8888-0afa637bae57",
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=file not found. try again?",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        -640,
+        1360
+      ],
+      "id": "85767b44-9c05-4666-8b16-13c36d9173bd",
+      "name": "Error3",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        1420,
+        1420
+      ],
+      "id": "4300131a-e5f9-4c32-a4de-05f1fb28b656",
+      "name": "Merge",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# Reel Publishing",
+        "height": 1900,
+        "width": 4000,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1500,
+        -100
+      ],
+      "id": "27c2e0d3-3f93-4fa4-aad4-00c714449831",
+      "name": "Sticky Note2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1JxP7K2Fqmnb8yXEjD9NImtVFlDaEXhPk_4H406banxg",
+          "mode": "list",
+          "cachedResultName": "MASTER Creative Workflow",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JxP7K2Fqmnb8yXEjD9NImtVFlDaEXhPk_4H406banxg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1641798713,
+          "mode": "list",
+          "cachedResultName": "Reels",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JxP7K2Fqmnb8yXEjD9NImtVFlDaEXhPk_4H406banxg/edit#gid=1641798713"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "owner": "={{ $json.editor }}",
+            "status": "reviewing",
+            "hook": "={{ $json.hook }}",
+            "serial number": "={{ $json['serial number'] }}",
+            "Submit Time": "={{(() => {\n  const date = new Date($now);\n  const options = {\n    year: 'numeric',\n    month: 'long',\n    day: 'numeric',\n    hour: 'numeric',\n    minute: '2-digit',\n    hour12: true\n  };\n  return date.toLocaleString('en-US', options);\n})()}}",
+            "fio link": "={{ $json.frameio_link }}",
+            "drive link": "={{ $json.img_dl_link }}",
+            "cap revise": "={{ $json.post }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "fio link",
+              "displayName": "fio link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "win",
+              "displayName": "win",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "owner",
+              "displayName": "owner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Submit Time",
+              "displayName": "Submit Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "drive link",
+              "displayName": "drive link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "serial number",
+              "displayName": "serial number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "hook",
+              "displayName": "hook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cap revise",
+              "displayName": "cap revise",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "IG caption",
+              "displayName": "IG caption",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "TT title",
+              "displayName": "TT title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CTA",
+              "displayName": "CTA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "IG thebenallgeyer",
+              "displayName": "IG thebenallgeyer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "TT benallgeyer",
+              "displayName": "TT benallgeyer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "TT wholesalemastery",
+              "displayName": "TT wholesalemastery",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "FB Ben Allgeyer",
+              "displayName": "FB Ben Allgeyer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Views",
+              "displayName": "Views",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Likes",
+              "displayName": "Likes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Comments",
+              "displayName": "Comments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Shares",
+              "displayName": "Shares",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "useAppend": false
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -2080,
+        1220
+      ],
+      "id": "2b96c10a-e403-433d-8e59-db849bf01b62",
+      "name": "Add to Creative Workflow",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "zyvkuC7uwNGY69y7",
+          "name": "Google Sheets account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C08TNEGJL4A",
+          "mode": "list",
+          "cachedResultName": "ready-review"
+        },
+        "text": "=🆕 {{ $('New Reels').item.json.Editor }} | {{ $('New Reels').item.json['Frame.io Link'] }} | {{ $('New Reels').item.json.Hook }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        -1820,
+        1240
+      ],
+      "id": "3d068de8-b25e-453d-b87f-83b8cfa7054f",
+      "name": "Send to Ready Review",
+      "webhookId": "844dd016-b572-4507-bf7c-35eb0538220f",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "formTitle": "Reels Submit",
+        "formDescription": "Submit your reels here for the agent to process them",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Editor",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "matt"
+                  },
+                  {
+                    "option": "zavala"
+                  },
+                  {
+                    "option": "rose"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Format",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "reel"
+                  },
+                  {
+                    "option": "tiktok"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Frame.io Link",
+              "placeholder": "https://f.io/XxXyYyZzZ",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Hook",
+              "placeholder": "What hook was used?",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Caption",
+              "placeholder": "What's your caption idea?",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "File",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "useWorkflowTimezone": false
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -3800,
+        1220
+      ],
+      "id": "14a6eb9b-9b96-4d79-bbc5-3994f112ea0c",
+      "name": "New Reels",
+      "webhookId": "aeb7cb66-9b14-4f48-a46d-881f66a81af6",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "98b19d53-b7fb-43f3-ae0e-c35e681ba642",
+              "name": "=post",
+              "value": "={{ $json.output.state }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2520,
+        1340
+      ],
+      "id": "b3d07688-b326-438e-89a4-6d1ff25a7604",
+      "name": "Set Current Draft1",
+      "executeOnce": true,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "multiplex",
+        "options": {}
+      },
+      "id": "ccb19a94-e73c-4086-b65d-73cc4071bfa1",
+      "name": "Merge Second1",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        -2300,
+        1220
+      ],
+      "executeOnce": true,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('New Reels').item.json.Caption }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You're an expert copywriter specializing in storytelling copy captions on instagram reels. Your job is to take the caption idea provided and write a first draft that is at least 200 words with short sentences but never exceeds 2200 characters. Our tone of voice guide is the following: empathetic but authoritative, not afraid to speak honestly, down to earth approachable, does not try to be funny but uses humor rarely but intelligently. Your response should never include emdashes, hashtags, explanations or questions - only the raw copy written informally, as if it were written as a text to a friend. Do not add comments or escape characters. Disregard perfect punctuation and always end the dialogue with a cliffhanger.\n---FORMAT---\nThe model's output must be a JSON object with a \"state\" property. Ex:\n{\n  \"state\": \"example caption\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -2900,
+        1340
+      ],
+      "id": "a87b0ec7-0a0a-4074-aaee-fb9e7dca4c57",
+      "name": "First Draft Agent1",
+      "executeOnce": true,
+      "disabled": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"state\": \"<caption text>\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        -2760,
+        1560
+      ],
+      "id": "c3c1251b-3c2b-4aaf-89c7-9c7f03df2c13",
+      "name": "Structured Output Parser1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-opus-4-20250514",
+          "mode": "list",
+          "cachedResultName": "Claude Opus 4"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -2880,
+        1560
+      ],
+      "id": "92e0bb43-9415-4cff-9d30-2ceedd749e19",
+      "name": "Anthropic Chat Model1",
+      "credentials": {
+        "anthropicApi": {
+          "id": "DTwNDFzBy7G56ojB",
+          "name": "Claude Benall"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://fassrytpmwgxwxrrnerk.supabase.co/storage/v1/object/reels/{{ $binary.data.fileName }}?upsert=true",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhc3NyeXRwbXdneHd4cnJuZXJrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NzY4NTE1MywiZXhwIjoyMDYzMjYxMTUzfQ.-VVNf6-6W1lcbbw-37zbVCExHJ_wwU_z3bnDBfpVpOo"
+            },
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhc3NyeXRwbXdneHd4cnJuZXJrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NzY4NTE1MywiZXhwIjoyMDYzMjYxMTUzfQ.-VVNf6-6W1lcbbw-37zbVCExHJ_wwU_z3bnDBfpVpOo"
+            },
+            {
+              "name": "Content-Type",
+              "value": "={{ $binary.data.mimeType }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -3480,
+        1220
+      ],
+      "id": "a3503ea5-44c1-41d8-acf4-141af1b19651",
+      "name": "Upload to Supabase",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "DS9jOk8N26FvPCJy",
+          "name": "Supabase Storage SR"
+        },
+        "supabaseApi": {
+          "id": "cph9O5LGQARVvvQj",
+          "name": "Supabase account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  return {\n    binary: {\n      data: item.binary[\"File\"]\n    },\n    json: {\n      fileName: item.binary[\"File\"].fileName\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3640,
+        1220
+      ],
+      "id": "410d871f-1c30-4e32-a6b8-7febce0d25f1",
+      "name": "Code",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "10f05434-c61a-4c1d-95cf-bc6bde9cf477",
+              "name": "img_dl_link",
+              "value": "={{ $json.downloadUrl }}",
+              "type": "string"
+            },
+            {
+              "id": "24a0459c-5b6d-421a-8928-86e64d24bfef",
+              "name": "editor",
+              "value": "={{ $('New Reels').item.json.Editor }}",
+              "type": "string"
+            },
+            {
+              "id": "d2b5c61b-50d5-41c0-ba11-f96d89d4b592",
+              "name": "format",
+              "value": "={{ $('New Reels').item.json.Format }}",
+              "type": "string"
+            },
+            {
+              "id": "f09f3637-04cc-4b57-8c88-981b7ead2cb4",
+              "name": "frameio_link",
+              "value": "={{ $('New Reels').item.json['Frame.io Link'] }}",
+              "type": "string"
+            },
+            {
+              "id": "b157e907-7f9d-4349-a0af-3462a6591f3b",
+              "name": "hook",
+              "value": "={{ $('New Reels').item.json.Hook }}",
+              "type": "string"
+            },
+            {
+              "id": "19394762-41af-4765-835c-b216e9d3e342",
+              "name": "cap revise",
+              "value": "={{ $('New Reels').item.json.Caption }}",
+              "type": "string"
+            },
+            {
+              "id": "f2c04b36-9d5d-4995-97e6-0da2b1f44843",
+              "name": "serial number",
+              "value": "={{ $('New Reels').item.json['Frame.io Link'].split('/').pop() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3120,
+        1220
+      ],
+      "id": "fc9fd8ac-08ed-4746-8db2-75eaf1a3b3b2",
+      "name": "Edit Fields1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# New Reel",
+        "height": 680,
+        "width": 2320,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -3900,
+        1100
+      ],
+      "id": "aeea1233-f907-4c71-b449-ba8113467da2",
+      "name": "Sticky Note4",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const key = item.json.Key || \"\";\n  const [bucket, fileName] = key.split(\"/\");\n  item.json.downloadUrl = `https://fassrytpmwgxwxrrnerk.supabase.co/storage/v1/object/public/reels/${fileName}`;\n  return item;\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3320,
+        1220
+      ],
+      "id": "f930597e-9d06-4c44-a215-11d0213031d9",
+      "name": "Code2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.facebook.com/v22.0/{{ $json.id }}?fields=status_code",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "status_code"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        2560
+      ],
+      "id": "22ac8c9b-b45c-4e33-91f9-2c78f7d2e224",
+      "name": "Check Status3",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "wLWayZf7M4hi9AoB",
+          "name": "FB Graph - Access Token - Expires In Aug - 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "47c02eb0-2a85-4966-a73d-084f8a0dd540",
+              "leftValue": "={{ $json.status_code }}",
+              "rightValue": "FINISHED",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1280,
+        2080
+      ],
+      "id": "67b29a05-5969-47f8-acf8-29461e30cce9",
+      "name": "Is Finished?3",
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "17841463359947632",
+        "edge": "media",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "children",
+                "value": "={{ $json.childIds.join(',') }}"
+              },
+              {
+                "name": "caption",
+                "value": "={{ $json['ig cap'] }}"
+              },
+              {
+                "name": "media_type",
+                "value": "CAROUSEL"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        480,
+        2300
+      ],
+      "id": "b05c0da3-8cc7-4d93-8aa6-5b62c9ea743c",
+      "name": "Create Carousel2",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "gw6M7A8GZWlYKlAm",
+          "name": "USER ACCESS TOKEN - SEPT EXPIRY"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "17841463359947632",
+        "edge": "media",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "image_url",
+                "value": "={{ $json.image_link }}"
+              },
+              {
+                "name": "is_carousel_item",
+                "value": "true"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        0,
+        2300
+      ],
+      "id": "0fccb7cb-ac4c-44d0-ad49-56ab8a10e652",
+      "name": "Upload IG Childs",
+      "executeOnce": false,
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "gw6M7A8GZWlYKlAm",
+          "name": "USER ACCESS TOKEN - SEPT EXPIRY"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1JxP7K2Fqmnb8yXEjD9NImtVFlDaEXhPk_4H406banxg",
+          "mode": "list",
+          "cachedResultName": "MASTER Creative Workflow",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JxP7K2Fqmnb8yXEjD9NImtVFlDaEXhPk_4H406banxg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1276296014,
+          "mode": "list",
+          "cachedResultName": "Carousels",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JxP7K2Fqmnb8yXEjD9NImtVFlDaEXhPk_4H406banxg/edit#gid=1276296014"
+        },
+        "event": "rowUpdate",
+        "options": {
+          "columnsToWatch": [
+            "Ready"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1380,
+        2220
+      ],
+      "id": "c52afe61-ab71-4663-a29c-ba651e7a3a79",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "SeIMEkYVFZuoafy3",
+          "name": "zavala@ Trigger"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9fd50a88-7589-4f0d-9ce3-47d993b1483c",
+              "name": "owner",
+              "value": "={{ $json.owner }}",
+              "type": "string"
+            },
+            {
+              "id": "c2112770-a39f-4d90-aec1-40075a83e1c7",
+              "name": "status",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            },
+            {
+              "id": "7ea17c91-d33a-44e4-acd7-373b1dde5a8b",
+              "name": "submit time",
+              "value": "={{ $json['Submit Time'] }}",
+              "type": "string"
+            },
+            {
+              "id": "8969538b-cbef-4636-b46d-f017e509b122",
+              "name": "folderid",
+              "value": "={{ $json.folderid }}",
+              "type": "string"
+            },
+            {
+              "id": "932ae3f6-a776-45a8-826f-60e924ce5dd2",
+              "name": "hook",
+              "value": "={{ $json.hook }}",
+              "type": "string"
+            },
+            {
+              "id": "b4501b9f-2dc5-4025-b428-b1102fd24092",
+              "name": "cap revise",
+              "value": "={{ $json['cap revise'] }}",
+              "type": "string"
+            },
+            {
+              "id": "c99a2c33-24ed-41cd-a6d0-7f3b1905abf5",
+              "name": "ig cap",
+              "value": "={{ $json['IG caption'] }}",
+              "type": "string"
+            },
+            {
+              "id": "e8111faa-257a-44c0-b124-c8658844f4d9",
+              "name": "tt cap",
+              "value": "={{ $json['TT title'] }}",
+              "type": "string"
+            },
+            {
+              "id": "aa4a12cd-56ab-4b14-a631-1fd477b37e19",
+              "name": "ready",
+              "value": "={{ $json.Ready }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1160,
+        2220
+      ],
+      "id": "b798d0c1-3d1d-421d-800b-8d8a39f19952",
+      "name": "Add Custom Fields",
+      "executeOnce": true,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "29f0af23-200a-42f9-ba52-55263308f406",
+              "leftValue": "={{ $('Add Custom Fields').item.json.ready }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "aaa4a71f-d337-499c-8aa7-f66a80b5ae26",
+              "leftValue": "={{ $('Add Custom Fields').item.json.status }}",
+              "rightValue": "ship",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -940,
+        2460
+      ],
+      "id": "0ada4115-c241-44b4-89f4-4375b89ef05c",
+      "name": "If",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "carousel-Logs",
+        "limit": 25,
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "folderid",
+              "condition": "eq",
+              "keyValue": "={{ $('Add Custom Fields').item.json.folderid }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        2460
+      ],
+      "id": "1191494c-8068-446d-b4b8-f8ba6fa39923",
+      "name": "Supabase1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "cph9O5LGQARVvvQj",
+          "name": "Supabase account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.image_link }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -500,
+        2460
+      ],
+      "id": "2adbb882-9303-44ff-b927-1b6d66c81b75",
+      "name": "HTTP Request",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        -280,
+        2220
+      ],
+      "id": "12a8b63b-33b5-41cf-accf-aebc6850a903",
+      "name": "Merge5",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "chatId": "1678123306",
+        "text": "it worked!",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -480,
+        2040
+      ],
+      "id": "36405ff8-0c03-479a-873a-e29304a45d23",
+      "name": "Success",
+      "webhookId": "82f20246-c89d-4678-89d6-1a20eee5cb42",
+      "executeOnce": true,
+      "notesInFlow": false,
+      "credentials": {
+        "telegramApi": {
+          "id": "ZO04GAEYvIaCYww4",
+          "name": "Telegram account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const ids = $input.all().map(i => i.json.id).filter(Boolean);\n\n// pull the IG caption from Add Custom Fields\nconst igCap = $('Add Custom Fields').item.json['ig cap'];\n\nif (!ids.length) {\n  throw new Error('No child media IDs returned from Upload IG Child');\n}\n\nreturn [{\n  json: {\n    childIds: ids,\n    'ig cap': igCap\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        2300
+      ],
+      "id": "3ef271af-b02c-40de-b720-15bb178510ff",
+      "name": "Aggregate Child IDs",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        2560
+      ],
+      "id": "ee4f644d-f03a-4d65-a07e-ecc94d3bc499",
+      "name": "Wait 15",
+      "webhookId": "e9ac0c1d-b415-4160-a6b1-908d2310cb23",
+      "retryOnFail": false,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=supabase upload complete...",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        -500,
+        2300
+      ],
+      "id": "be3c3e7b-c636-4b76-88ae-35d00d99cccb",
+      "name": "Upload Complete",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "executeOnce": true,
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=sending to Facebook...",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        240,
+        2100
+      ],
+      "id": "42bdfd00-fb1b-4266-aa8d-d9ed188bfad1",
+      "name": "Sending to FB",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "executeOnce": true,
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=creating container...",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        660,
+        2120
+      ],
+      "id": "5cdb0c38-72a2-4979-8adf-1d23dc382ba9",
+      "name": "Creating Container",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=checking status...",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        240,
+        2720
+      ],
+      "id": "3d292727-991d-4fae-a595-487ecaa04596",
+      "name": "Checking Status",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "17841463359947632",
+        "edge": "media_publish",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "creation_id",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "name": "caption",
+                "value": "={{ $('Aggregate Child IDs').item.json['ig cap'] }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1980
+      ],
+      "id": "d8ff934d-f5e0-4de9-bcc7-33f4c2e8fd9a",
+      "name": "Publish",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "gw6M7A8GZWlYKlAm",
+          "name": "USER ACCESS TOKEN - SEPT EXPIRY"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=verifying upload...",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        -1160,
+        2040
+      ],
+      "id": "9a30bca5-962c-4ee6-bf80-8a2d0c889ff6",
+      "name": "Verifying Upload",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=upload verified...",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        -720,
+        2300
+      ],
+      "id": "94bd2e31-eb54-45cd-bb7a-ab392124ea59",
+      "name": "Upload Verified",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=upload failed. check and try again.",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        -720,
+        2660
+      ],
+      "id": "90a27199-227e-4931-9cb8-2e1ab1973478",
+      "name": "Upload Not Verified",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=✅ Carousel Published",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1940,
+        1960
+      ],
+      "id": "5ac16654-c70f-4728-a000-f76364620cd0",
+      "name": "Published",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1700,
+        1980
+      ],
+      "id": "e48e6874-34c1-43f7-abce-71803cc95c1f",
+      "name": "Wait 5",
+      "webhookId": "e9ac0c1d-b415-4160-a6b1-908d2310cb23",
+      "retryOnFail": false,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# Grab Carousel",
+        "height": 1060,
+        "width": 1320,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1440,
+        1920
+      ],
+      "id": "46272374-e62e-4c6f-b577-e0c881e25f02",
+      "name": "Sticky Note5",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# Upload to Main IG",
+        "height": 1060,
+        "width": 2500,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -100,
+        1920
+      ],
+      "id": "55f8099b-c22f-473f-89fd-f21378058b72",
+      "name": "Sticky Note6",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c73db19d-560a-4b42-a4f3-8347ab65b342",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "Error",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ERROR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "In Progress",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "71a4e79c-f58d-49da-abe2-ccd10cec5590"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "IN PROGRESS"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1720,
+        2180
+      ],
+      "id": "afee998b-0fe9-4cfe-acdf-3c0c6ac7ce88",
+      "name": "Switch Status2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=video error, trying again",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1940,
+        2100
+      ],
+      "id": "722f5a6c-f940-4331-85db-0a7f3553f47c",
+      "name": "Error4",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2200,
+        2700
+      ],
+      "id": "4194bd61-b8aa-4c18-a871-1278b472dd7b",
+      "name": "Wait Retry 15s1",
+      "webhookId": "e9ac0c1d-b415-4160-a6b1-908d2310cb23",
+      "retryOnFail": false,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=upload in progress, waiting...",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1940,
+        2280
+      ],
+      "id": "f41af6b4-74ae-40e3-934e-e272111c9fc6",
+      "name": "In Progress1",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0de2bcab-5774-4854-abf2-53509912dc08",
+                    "leftValue": "={{ $json.ig_error }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "number",
+                      "operation": "empty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "No Error"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c73db19d-560a-4b42-a4f3-8347ab65b342",
+                    "leftValue": "={{ $json.ig_error }}",
+                    "rightValue": 2207010,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Caption Long"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b75498aa-db26-46e9-b5e4-74b41de6fa78",
+                    "leftValue": "={{ $json.ig_error }}",
+                    "rightValue": 2207026,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Bad Format"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "64433fd0-d1da-4367-90bd-54e1beaa1b26",
+                    "leftValue": "={{ $json.ig_error }}",
+                    "rightValue": 2207052,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "URL Broke"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.ig_error }}",
+                    "rightValue": 2207001,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "71a4e79c-f58d-49da-abe2-ccd10cec5590"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Server Busy"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "9c289b5e-19a5-4477-bdfb-1229eef4fdfc",
+                    "leftValue": "={{ $json.ig_error }}",
+                    "rightValue": 2207053,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Server Busy"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        780,
+        2360
+      ],
+      "id": "9ec41370-56c1-4054-8167-17005b0b9eec",
+      "name": "Switch Status3",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=caption too long, revise to under 2200 characters",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1280,
+        2240
+      ],
+      "id": "e47f8a0e-0c3a-449c-a26f-81dadd2891dd",
+      "name": "Cap Too Long1",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        2240
+      ],
+      "id": "94b76f78-83ed-4217-8262-6bdb914912e8",
+      "name": "End3",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1280,
+        2720
+      ],
+      "id": "f45429c2-160e-459d-8ead-b8f31a5db66c",
+      "name": "Wait 60s1",
+      "webhookId": "e9ac0c1d-b415-4160-a6b1-908d2310cb23",
+      "retryOnFail": false,
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        2400
+      ],
+      "id": "a829a9d5-7847-47c1-b945-5ff5b9066937",
+      "name": "End4",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=video is formatted correctly, change to MP4/MOV and retry",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1280,
+        2400
+      ],
+      "id": "c17b466e-4d54-4cef-985c-99105ce8c4fa",
+      "name": "Bad Format1",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0930LKSLQK",
+          "mode": "list",
+          "cachedResultName": "post-feed"
+        },
+        "text": "=video error, trying again",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1280,
+        2560
+      ],
+      "id": "e16f4ea1-573a-477c-b4ee-4333d85c63cf",
+      "name": "Error5",
+      "webhookId": "f942867c-248f-4257-90ff-5cb4ac927186",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        2560
+      ],
+      "id": "f8bf59de-3bf2-4258-bffa-10d681e0c961",
+      "name": "End5",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// regex pulls \"2207010\" out of \n// status = \"Error: Media upload has failed with error code 2207010\"\nconst m = ($json.status || '').match(/error code (\\d+)/i);\nitem.json.ig_error = m ? parseInt(m[1], 10) : null;\nreturn item;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        2560
+      ],
+      "id": "37a523e2-d2eb-4bd9-b8b7-a736efc4c1a6",
+      "name": "Code3",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1JxP7K2Fqmnb8yXEjD9NImtVFlDaEXhPk_4H406banxg",
+          "mode": "list",
+          "cachedResultName": "MASTER Creative Workflow",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JxP7K2Fqmnb8yXEjD9NImtVFlDaEXhPk_4H406banxg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1276296014,
+          "mode": "list",
+          "cachedResultName": "Carousels",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JxP7K2Fqmnb8yXEjD9NImtVFlDaEXhPk_4H406banxg/edit#gid=1276296014"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "published"
+          },
+          "matchingColumns": [
+            "serial number"
+          ],
+          "schema": [
+            {
+              "id": "owner",
+              "displayName": "owner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Submit Time",
+              "displayName": "Submit Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "folderid",
+              "displayName": "folderid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "hook",
+              "displayName": "hook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "cap revise",
+              "displayName": "cap revise",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "IG caption",
+              "displayName": "IG caption",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "TT title",
+              "displayName": "TT title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CTA",
+              "displayName": "CTA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Ready",
+              "displayName": "Ready",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "IG thebenallgeyer",
+              "displayName": "IG thebenallgeyer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "TT benallgeyer",
+              "displayName": "TT benallgeyer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "TT wholesalemastery",
+              "displayName": "TT wholesalemastery",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "FB Ben Allgeyer",
+              "displayName": "FB Ben Allgeyer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Views",
+              "displayName": "Views",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Likes",
+              "displayName": "Likes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Comments",
+              "displayName": "Comments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Shares",
+              "displayName": "Shares",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2120,
+        1960
+      ],
+      "id": "14fc3d23-6bcc-4a4e-8a38-bcd26951bcf5",
+      "name": "Mark as Published1",
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "hcToihb1ZUBELpcu",
+          "name": "zavala@"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# Carousel Publishing",
+        "height": 1240,
+        "width": 4000,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1500,
+        1840
+      ],
+      "id": "4f78ed43-d52d-4f3a-9520-b65c113fc4c7",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "formTitle": "Carousel Submit",
+        "formDescription": "Submit your images here for the agent to process them",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Editor",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "matt"
+                  },
+                  {
+                    "option": "zavala"
+                  },
+                  {
+                    "option": "rose"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Hook",
+              "placeholder": "What hook was used?",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Caption",
+              "placeholder": "What's your best idea for a caption?",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Images",
+              "fieldType": "file",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "useWorkflowTimezone": false
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -4120,
+        2200
+      ],
+      "id": "033bc53a-46ec-4caa-9300-65010a256256",
+      "name": "New Carousels Submitted",
+      "webhookId": "bfbd3cf5-d125-41e3-8a4f-d296fbe8013c",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ $json.Hook }}",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1xpAlUhEvJ1OjkOd9u4l2ysC6uh1JH_EY",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "7d98e0d4-f4ab-4dac-9c9a-d798bc7ef919",
+      "name": "New Folder",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -3900,
+        2300
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JNEh7lsM6WYCXkLp",
+          "name": "zavala@"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Split Images – v3  (serial + uploadName)\nconst output = [];\nconst imgs = $json.Images || [];\n\n// Create one serial for this submission\nconst serial = Math.random().toString(36).slice(2, 8).toUpperCase();\n\nimgs.forEach((meta, i) => {\n  const binKey = `Images_${i}`;\n  if ($binary[binKey]) {\n    // keep original extension (\".png\", \".jpg\", …)\n    const ext = meta.filename.includes('.')\n      ? meta.filename.slice(meta.filename.lastIndexOf('.'))\n      : '';\n    const uploadName = `${serial}_${i + 1}${ext}`;\n\n    output.push({\n      json: {\n        filename: meta.filename,   // original name\n        mimetype: meta.mimetype,\n        size: meta.size,\n        order: i + 1,              // 1-based index\n        serial,                    // same for all images in this set\n        uploadName                 // unique name used in Storage\n      },\n      binary: {\n        data: $binary[binKey]      // “data” is what HTTP Request sends\n      }\n    });\n  }\n});\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3680,
+        2100
+      ],
+      "id": "3870d5c7-dfcc-4869-8d09-1b7a15fbfbdf",
+      "name": "Split Images & Fields",
+      "alwaysOutputData": false,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "editor",
+              "value": "={{ $('New Carousels Submitted').item.json.Editor }}"
+            },
+            {
+              "name": "folderId",
+              "value": "={{ $json.id }}"
+            },
+            {
+              "name": "hook",
+              "value": "={{ $('New Carousels Submitted').item.json.Hook }}"
+            },
+            {
+              "name": "capidea",
+              "value": "={{ $('New Carousels Submitted').item.json.Caption }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5754e1be-aa7c-4138-a289-7794bbfd286c",
+      "name": "Set Custom Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        -3680,
+        2300
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "98b19d53-b7fb-43f3-ae0e-c35e681ba642",
+              "name": "=post",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2420,
+        2320
+      ],
+      "id": "adc7613b-3b16-4573-9950-15af29911bb5",
+      "name": "Set Current Draft",
+      "executeOnce": true,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "tableId": "carousel-Logs",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "submit_time",
+              "fieldValue": "={{(() => {   const date = new Date($now);   const options = {     year: 'numeric',     month: 'long',     day: 'numeric',     hour: 'numeric',     minute: '2-digit',     hour12: true   };   return date.toLocaleString('en-US', options); })()}}"
+            },
+            {
+              "fieldId": "image_link",
+              "fieldValue": "={{ 'https://fassrytpmwgxwxrrnerk.supabase.co/storage/v1/object/public/' + $json.Key }}"
+            },
+            {
+              "fieldId": "folderid",
+              "fieldValue": "={{ $('Merge First').item.json.folderId }}"
+            },
+            {
+              "fieldId": "serial",
+              "fieldValue": "={{ $('Split Images & Fields').item.json.serial }}"
+            },
+            {
+              "fieldId": "order",
+              "fieldValue": "={{ $('Split Images & Fields').item.json.order }}"
+            },
+            {
+              "fieldId": "hook",
+              "fieldValue": "={{ $('Set Custom Fields').item.json.hook }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -3020,
+        2320
+      ],
+      "id": "72a2a3a3-722e-4926-8f2c-5511b519dddc",
+      "name": "Add to carousel table1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "cph9O5LGQARVvvQj",
+          "name": "Supabase account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1JxP7K2Fqmnb8yXEjD9NImtVFlDaEXhPk_4H406banxg",
+          "mode": "list",
+          "cachedResultName": "MASTER Creative Workflow",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JxP7K2Fqmnb8yXEjD9NImtVFlDaEXhPk_4H406banxg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1276296014,
+          "mode": "list",
+          "cachedResultName": "Carousels",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JxP7K2Fqmnb8yXEjD9NImtVFlDaEXhPk_4H406banxg/edit#gid=1276296014"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "owner": "={{ $json.editor }}",
+            "status": "reviewing",
+            "Submit Time": "={{(() => {   const date = new Date($now);   const options = {     year: 'numeric',     month: 'long',     day: 'numeric',     hour: 'numeric',     minute: '2-digit',     hour12: true   };   return date.toLocaleString('en-US', options); })()}}",
+            "folderid": "={{ $json.folderId }}",
+            "hook": "={{ $json.hook }}",
+            "cap revise": "={{ $json.post }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "owner",
+              "displayName": "owner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Submit Time",
+              "displayName": "Submit Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "folderid",
+              "displayName": "folderid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "hook",
+              "displayName": "hook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "cap revise",
+              "displayName": "cap revise",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "IG caption",
+              "displayName": "IG caption",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "TT title",
+              "displayName": "TT title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CTA",
+              "displayName": "CTA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Ready",
+              "displayName": "Ready",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "IG thebenallgeyer",
+              "displayName": "IG thebenallgeyer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "TT benallgeyer",
+              "displayName": "TT benallgeyer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "TT wholesalemastery",
+              "displayName": "TT wholesalemastery",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "FB Ben Allgeyer",
+              "displayName": "FB Ben Allgeyer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Views",
+              "displayName": "Views",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Likes",
+              "displayName": "Likes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Comments",
+              "displayName": "Comments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Shares",
+              "displayName": "Shares",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "useAppend": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1980,
+        2200
+      ],
+      "id": "f7dc7f98-5931-4814-bc8b-cc7586aae582",
+      "name": "Google Sheets",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "hcToihb1ZUBELpcu",
+          "name": "zavala@"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "multiplex",
+        "options": {}
+      },
+      "id": "3537d438-3dfa-4339-8e5f-b62b85ef2350",
+      "name": "Merge First",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        -3460,
+        2200
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "multiplex",
+        "options": {}
+      },
+      "id": "3d5b5687-e4ae-4208-981a-2a53489390a0",
+      "name": "Merge Second",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        -2200,
+        2200
+      ],
+      "executeOnce": true,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Merge First').item.json.capidea }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "---OBJECTIVE--- You're an expert copywriter specializing in writing captions for instagram.  ---GUIDELINES--- Hook & Attention-Grabbers - Open with a punchy, curiosity-sparking statement   - Challenge a common misconception to create instant tension   - Use hard numbers or stats in the first line   - Pose a radical contrast   - Lead with scarcity or urgency   - Drop a contrarian take   - Tease free value right away   - Frame the market climate as a once-in-a-lifetime window   - Start with a relatable pain point   - Use a one-word or one-sentence cliff-hanger for dramatic pause    Tone & Voice - Conversational, brotherhood energy: Drop contractions, speak in first person, sprinkle midwestern slang.   - Confident but not condescending: Position yourself as the guide, not the guru.   - Occasional self-deprecating humor to stay human   - Include empathy for skeptics   - Use inclusive pronouns (“we,” “us,” “let’s”) to invite participation.   - Keep sentences short, punchy, staccato—mimic spoken cadence.   - Capitalize key power words sparingly for emphasis (“DM us “HUSTLE””).   - A dash of motivational hustle culture but ground it in specifics.   - Occasional emoji as visual spice but never more than 1-2.   - Show humble origin story elements to build relatability.    Structure & Formatting - Problem ➜ Myth Bust ➜ Solution ➜ CTA is the default arc.   - Separate ideas with line breaks for easy skimming on mobile.   - Insert numbered or bullet lists to simplify steps.   - Alternate short single-sentence lines with 2-3 sentence blocks to create rhythm.   - Cap hooks/headlines at ~8 words, body at 120–200 words for IG/FB   - Repeat the CTA near the end after restating the core promise.   - Use ALL CAPS only in CTAs (“COMMENT “LINK””).   - Keep paragraphs <3 lines; walls of text kill retention.   - Stack micro-paragraphs to mimic a thread feel.    Content Themes - Myth-busting (licensing, cash needed, market timing).   - Process reveals (step-by-step wholesaling blueprint).   - Lifestyle freedom (time with family, football games, vacations).   - Risk & reward mindset (biggest risk = no action).   - Market positioning (boring zip codes, distressed homes).   - Income potential snapshots ($10-$20K per deal, 3-4 deals a month).   - Personal transformation narrative (broke → 7-figure business).   - Community & mentorship (free masterclass, 1-on-1 help).   - Recession/inflation-proof angle, opportunity in any cycle.   - Tool & resource shout-outs (Xome, Auction.com, TruePeopleSearch, Facebook groups).    Persuasion & Psychology - Contrast “everyone” vs. “us” to create tribe identity.   - Future-pacing—paint a vivid picture of life after first deal.   - Scarcity & exclusivity—limited seats, limited time, comment-trigger.   - Specific micro-wins (one deal can erase rent, quit job, fund vacation).   - Normalize objections (“The process is simple but it’s not easy.”).   - Highlight ease + honesty, “$0 down, but expect rejection.”   - Emphasize asymmetric upside, low risk, high reward.   - Use chunked “what you’ll get” lists for clarity (scripts, contract, leads).   - Tap into status & belonging—“investors are foaming at the mouth, you should be too.”    Call-to-Action Mechanics - One clear CTA per caption—register, DM keyword, click bio link.   - CTA appears twice: mid-caption soft invite and hard close.   - Keyword DM triggers (REI, SELLERS, PARTNER).   - Comment-gate resources to boost engagement (“Comment ‘LINK’ for the guide.”).   - Use urgency tags: “tonight,” “Thursday 7 PM EST,” “8 spots left.”   - Frame the action as low friction (free, quick, takes 60 sec).   - Promise of personal response increases perceived value (“I’ll DM you personally.”).   - Occasionally add mini-assignment (“Send this to someone who…”).   - Tie CTA to solution of pain introduced in hook.   - Capitalize keyword once, quotation-mark it, no extra symbols.    Language Patterns & Copy Tricks - Parallelism (“No license. No mortgage. No flipping.”).   - Anaphora (repeating “You’ll…” or “Here’s how…”).   - Rule of threes for rhythm (speed, margin, freedom).   - Rhetorical questions to keep readers thinking.   - Micro-stories (“Dropped out of med school… best thing ever.”).   - Mini-definitions to educate quickly (“That’s a wholesale deal.”).   - Colloquial quantifiers (“a pile of cash,” “crazy upside”).   - Use 2nd-person commands (“Learn to love the boring places.”).   - Occasional parenthetical asides for voice (lol, 😂).   - Ellipses for suspense (“But if you stay consistent…”).    Credibility & Authority - Drop tangible receipts (deal count, revenue figures, screenshots).   - Mention years in game (7) to anchor expertise.   - Show empathy through past struggle (broke, hated 9-5, left med school).   - Acknowledge critics transparently (“I’d assume I was a scammer too.”).   - Offer free trainings as proof-of-value before ask.   - Share both wins & grind (rejections, late nights, ghosting).   - Use specific local examples (Little Rock instead of generic “small city”).   - Stay policy-neutral on politics; focus on controllables (money, hustle).    Theme-to-Caption Builder Cheatsheet - Choose a hook type (myth-bust, stat shock, lifestyle freedom).   - Identify 1-2 pain points your reader feels today.   - Present an unconventional solution (wholesaling, boring markets).   - Insert 3-step or 5-step micro-framework outlining how.   - Back it with a quick win or personal anecdote.   - Add 1 scarcity or urgency element.   - Close with single CTA (keyword DM or free class).   - Proofread for punch, pacing, and power words.    ---FORMAT--- Your response should never include emdashes, hashtags, explanations or questions. Only the raw output, disregarding perfect punctuation. Do not add comments or escape characters."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        -2800,
+        2340
+      ],
+      "id": "1be44748-f3db-4bcb-b122-9e00d96cd99b",
+      "name": "Basic LLM Chain",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-opus-4-20250514",
+          "mode": "list",
+          "cachedResultName": "Claude Opus 4"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -2780,
+        2440
+      ],
+      "id": "09109133-c870-4109-b4e8-1b4671503776",
+      "name": "Anthropic Chat Model2",
+      "credentials": {
+        "anthropicApi": {
+          "id": "DTwNDFzBy7G56ojB",
+          "name": "Claude Benall"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://fassrytpmwgxwxrrnerk.supabase.co/storage/v1/object/carousel-images/' + $json.uploadName + '?upsert=true' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhc3NyeXRwbXdneHd4cnJuZXJrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NzY4NTE1MywiZXhwIjoyMDYzMjYxMTUzfQ.-VVNf6-6W1lcbbw-37zbVCExHJ_wwU_z3bnDBfpVpOo"
+            },
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhc3NyeXRwbXdneHd4cnJuZXJrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NzY4NTE1MywiZXhwIjoyMDYzMjYxMTUzfQ.-VVNf6-6W1lcbbw-37zbVCExHJ_wwU_z3bnDBfpVpOo"
+            },
+            {
+              "name": "Content-Type",
+              "value": "={{ $json.mimetype }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -3240,
+        2320
+      ],
+      "id": "7b633c26-2932-4651-8514-140f1b98a00f",
+      "name": "Upload to Supabase1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "DS9jOk8N26FvPCJy",
+          "name": "Supabase Storage SR"
+        },
+        "supabaseApi": {
+          "id": "cph9O5LGQARVvvQj",
+          "name": "Supabase account"
+        }
+      },
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C08TNEGJL4A",
+          "mode": "list",
+          "cachedResultName": "ready-review"
+        },
+        "text": "=🆕 Carousel | {{ $json.hook }} | {{ $('Google Sheets').item.json.folderid }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        -1760,
+        2200
+      ],
+      "id": "9d0726bc-a692-45e5-910f-e37646e9bf89",
+      "name": "Slack1",
+      "webhookId": "54488cb2-670c-48d6-b5af-9aedecbcd0e8",
+      "credentials": {
+        "slackApi": {
+          "id": "klUS2YxYCP83h3Ph",
+          "name": "WM Slack"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# New Carousel",
+        "height": 680,
+        "width": 2680,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -4220,
+        2040
+      ],
+      "id": "dd151b15-b7ed-4fe2-b7a5-2cd07b7bd5ac",
+      "name": "Sticky Note9",
+      "disabled": true
+    }
+  ],
+  "connections": {
+    "Publish Reel": {
+      "main": [
+        [
+          {
+            "node": "Published on IG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lookup Sheet": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Sheet Found1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create IG Reel": {
+      "main": [
+        [
+          {
+            "node": "Get Container ID",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Created",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Container ID": {
+      "main": [
+        [
+          {
+            "node": "container id created",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Wait 30s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Status": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Status": {
+      "main": [
+        [
+          {
+            "node": "Error",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "In Progress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Finished?": {
+      "main": [
+        [
+          {
+            "node": "Publish Reel",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Finished",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to ttBA": {
+      "main": [
+        [
+          {
+            "node": "posted to ttBA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to ttWM": {
+      "main": [
+        [
+          {
+            "node": "posted to ttWM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "got video file",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upload to ttBA",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upload to ttWM",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create IG Reel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark as Published": {
+      "main": [
+        [
+          {
+            "node": "Update Team",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Published on IG": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error": {
+      "main": [
+        [
+          {
+            "node": "Wait Retry 15s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "posted to ttBA": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "posted to ttWM": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Wait Retry 15s": {
+      "main": [
+        [
+          {
+            "node": "Check Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "In Progress": {
+      "main": [
+        [
+          {
+            "node": "Wait Retry 15s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Status1": {
+      "main": [
+        [
+          {
+            "node": "Cap Too Long",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Bad Format",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait 60s",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait 60s",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Is Finished?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Switch Status1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cap Too Long": {
+      "main": [
+        [
+          {
+            "node": "End",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 60s": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bad Format": {
+      "main": [
+        [
+          {
+            "node": "End1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error1": {
+      "main": [
+        [
+          {
+            "node": "End2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 30s": {
+      "main": [
+        [
+          {
+            "node": "Check Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reels": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Lookup Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add to Creative Workflow": {
+      "main": [
+        [
+          {
+            "node": "Send to Ready Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send to Ready Review": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New Reels": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Current Draft1": {
+      "main": [
+        [
+          {
+            "node": "Merge Second1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Second1": {
+      "main": [
+        [
+          {
+            "node": "Add to Creative Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "First Draft Agent1": {
+      "main": [
+        [
+          {
+            "node": "Set Current Draft1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "First Draft Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "First Draft Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to Supabase": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Upload to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge Second1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "First Draft Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Status3": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Finished?3": {
+      "main": [
+        [
+          {
+            "node": "Publish",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch Status2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Carousel2": {
+      "main": [
+        [
+          {
+            "node": "Wait 15",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Creating Container",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload IG Childs": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Child IDs",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Sending to FB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Add Custom Fields",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Verifying Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Custom Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Supabase1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upload Verified",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Upload Not Verified",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upload Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Merge5",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge5": {
+      "main": [
+        [
+          {
+            "node": "Upload IG Childs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Child IDs": {
+      "main": [
+        [
+          {
+            "node": "Create Carousel2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 15": {
+      "main": [
+        [
+          {
+            "node": "Check Status3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Checking Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publish": {
+      "main": [
+        [
+          {
+            "node": "Wait 5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 5": {
+      "main": [
+        [
+          {
+            "node": "Published",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Status2": {
+      "main": [
+        [
+          {
+            "node": "Error4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "In Progress1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error4": {
+      "main": [
+        [
+          {
+            "node": "Wait Retry 15s1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Retry 15s1": {
+      "main": [
+        [
+          {
+            "node": "Check Status3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "In Progress1": {
+      "main": [
+        [
+          {
+            "node": "Wait Retry 15s1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Status3": {
+      "main": [
+        [
+          {
+            "node": "Is Finished?3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cap Too Long1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Bad Format1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait 60s1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait 60s1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cap Too Long1": {
+      "main": [
+        [
+          {
+            "node": "End3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 60s1": {
+      "main": [
+        [
+          {
+            "node": "Upload IG Childs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bad Format1": {
+      "main": [
+        [
+          {
+            "node": "End4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error5": {
+      "main": [
+        [
+          {
+            "node": "End5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "Switch Status3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New Carousels Submitted": {
+      "main": [
+        [
+          {
+            "node": "Split Images & Fields",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "New Folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New Folder": {
+      "main": [
+        [
+          {
+            "node": "Set Custom Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Images & Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge First",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Custom Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge First",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Set Current Draft": {
+      "main": [
+        [
+          {
+            "node": "Merge Second",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Add to carousel table1": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Slack1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge First": {
+      "main": [
+        [
+          {
+            "node": "Upload to Supabase1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Second",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Second": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Set Current Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to Supabase1": {
+      "main": [
+        [
+          {
+            "node": "Add to carousel table1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack1": {
+      "main": [
+        [
+          {
+            "node": "Add Custom Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {
+    "Reels": [
+      {
+        "row_number": 19,
+        "fio link": "https://f.io/RLd6gEuA",
+        "win": "",
+        "owner": "matt",
+        "Submit Time": "July 25, 2025 at 4:54 PM",
+        "drive link": "https://fassrytpmwgxwxrrnerk.supabase.co/storage/v1/object/public/reels//RLd6gEuA.mp4",
+        "status": "published",
+        "serial number": "RLd6gEuA",
+        "hook": "most people quit",
+        "cap revise": "ok so picture this. youre standing in front of the mirror at 5am again. third week straight. your body hurts in places you didnt know existed and that voice in your head is getting louder. the one that says maybe youre not cut out for this. maybe everyone else just has something you dont. i get it. i really do. because heres what nobody talks about. right before the breakthrough theres always this moment. this specific kind of awful where everything feels harder than it should. where you question every decision that brought you here. its like learning to ride a bike and youre in that wobbling phase where you cant quite balance but youre not falling either. just suspended in this uncomfortable middle ground. most people bail right here. they think the discomfort means theyre on the wrong path. but what if i told you this is exactly where youre supposed to be. think about it. a butterfly literally dissolves into soup before it transforms. soup. like complete cellular breakdown. if that butterfly could think it would probably be having an existential crisis in that cocoon. but the breakdown is the point. its not a detour from the transformation. it IS the transformation. youre not doing it wrong. youre just in the messy middle. the part instagram doesnt show. the part where champions are actually made. not in the victory lap but in the thousandth rep when nobody's watching. in the moment you choose to show up even though every fiber of your being wants to quit. thats where the magic lives. so if youre reading this at rock bottom. if youre convinced youre behind or broken or just not built for this. remember that diamonds form under pressure. muscles grow from being torn apart. and sometimes the only way out is through. the fact that its hard doesnt mean youre weak. it means youre doing something that matters. something that will change you. and change was never meant to be comfortable. tomorrow youll wake up and face that mirror again. and you'll have a choice. you always do. but now you know the secret. that feeling like you want to quit? its not a stop sign. its a sign youre closer than youve ever been. the question is...",
+        "IG caption": "",
+        "TT title": "",
+        "CTA": "",
+        "IG thebenallgeyer": "",
+        "TT benallgeyer": "",
+        "TT wholesalemastery": "",
+        "FB Ben Allgeyer": "",
+        "Notes": "",
+        "Views": "",
+        "Likes": "",
+        "Comments": "",
+        "Shares": ""
+      }
+    ],
+    "Google Sheets Trigger": [
+      {
+        "row_number": 6,
+        "owner": "rose",
+        "status": "ship",
+        "Submit Time": "July 31, 2025 at 6:51 PM",
+        "folderid": "1I48iwQQMTaWTgdRgu_neMaumC9ac85GS",
+        "hook": "What if I can't find a buyer?",
+        "cap revise": "so there I was, contract in hand, seller ready to go, and nobody to assign it to. stomach dropped. hands sweating. this was supposed to be my big break in wholesaling but I had zero buyers lined up. sound familiar?\n\nI remember calling every number I could find online. leaving voicemails that never got returned. posting in facebook groups hoping someone would bite. nothing. meanwhile the clock was ticking on my contract.\n\nthat night I made a decision. if I was gonna make it in this business I needed a real buyers list. not just 10 or 20 names. I needed hundreds. thousands even.\n\nstarted simple. went to every reia meeting in a 50 mile radius. brought donuts. people love donuts. collected business cards like they were gold. because they were.\n\nthen I discovered something. cash buyers leave breadcrumbs everywhere. property records showed who bought with cash. landlord associations had member lists. hard money lenders knew everyone.\n\nwithin 90 days I had 500 names. kept pushing. automated my outreach. built relationships instead of just collecting contacts. year later I crossed 7,000 verified cash buyers.\n\nnow when I get a deal, I send one text blast. phone blows up within minutes. multiple offers. bidding wars. exactly how wholesaling should work.\n\nthe difference between struggling and succeeding in this business? its not about finding better deals. its about knowing exactly who wants them before you even make an offer. if you're still wondering who's gonna buy your next deal...",
+        "IG caption": "this question kills more wholesalers than anything else I see..\n\n“but what if i don’t have a buyer?”\n\nand hey, i get it!\n\nwhy bother chasing a deal if you don’t have someone to hand it off to?\n\nthat pit in your stomach when the clock is ticking and there’s no solid buyer lined up? that's real.\n\nbut stop letting that be the reason you’re not calling homeowners.\n\nstop using it as an excuse to avoid taking action.\n\nafter 400+ deals, i can tell you this with full confidence—\n\ni’ve never had a deal i couldn’t find a buyer for.\n\nnever.\n\nthe truth is, if the deal is good, the buyers will show up.\n\nyes, it’s smart to build your buyers list over time.\n\nyes, it helps to have a few hungry investors ready to go.\n\nabsolutely, send out texts, go to meetups, post on socials, do all of it.\n\nbut that’s not the starting point.\n\nyour first move isn’t to build a perfect buyers list.\n\nyour first move is to get a property under contract.\n\nbecause buyers don’t want “leads” or “maybes.”\n\nthey want deals. they want numbers. they want contracts.\n\nso flip the mindset.\n\nyou don’t need 50 buyers to get started.\n\nyou need one deal to attract the right buyers.\n\ndon’t sit on your hands worrying about step 5 when you haven’t done step 1.\n\nif you’ve got a solid deal and you know how to present it, you can find buyers in Facebook groups, in your network, through other wholesalers..\n\neven right here in your city who are looking for their next project.\n\nthe key is action.\n\nmake the calls. talk to sellers. get the reps in.\n\nbecause not having a buyer isn’t the real problem. \n\nwaiting for the “perfect time” is...",
+        "TT title": "",
+        "CTA": "",
+        "Ready": true,
+        "IG thebenallgeyer": "",
+        "TT benallgeyer": "",
+        "TT wholesalemastery": "",
+        "FB Ben Allgeyer": "",
+        "Views": "",
+        "Likes": "",
+        "Comments": "",
+        "Shares": ""
+      }
+    ],
+    "New Carousels Submitted": [
+      {
+        "Editor": "zavala",
+        "Hook": "how to be a millionaire",
+        "Caption": "heres how you make $1M with wholesaling",
+        "Images": [
+          {
+            "filename": "ben-headshot.jpg",
+            "mimetype": "image/jpeg",
+            "size": 359138
+          },
+          {
+            "filename": "carrie.jpg",
+            "mimetype": "image/jpeg",
+            "size": 20326
+          },
+          {
+            "filename": "WhatsApp Image 2025-02-20 at 18.48.25_66df8d45.jpg",
+            "mimetype": "image/jpeg",
+            "size": 47044
+          }
+        ],
+        "submittedAt": "2025-08-01T01:20:23.148Z",
+        "formMode": "test"
+      }
+    ]
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "58fd7a8c5d2c906f8e1212846b116e90979bf2e282fbc0683091b20f54593d70"
+  }
+}"
+
